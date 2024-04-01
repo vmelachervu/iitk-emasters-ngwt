@@ -2,9 +2,9 @@
 
 Welcome to the repository containing course materials for the eMasters- NGWT program at the Indian Institute of Technology Kanpur (IIT Kanpur). Here, you'll find resources for various subjects covered in the eMasters program as collated by me. Feel free to browse, use, and contribute to this repository.
 
-## About the Program
+## About the Program and Repository
 
-The eMasters - Next Generation Wireless Technologies is an online Masters Degree program offered by IIT Kanpur is designed to advance the career of working professional with cutting edge curriculum. The course covers the latest and gretest techniques in wireless technologies focused towards 5G and beyond. 
+The eMasters - Next Generation Wireless Technologies is an online Masters Degree program offered by IIT Kanpur is designed to advance the career of working professional with cutting edge curriculum. The course covers the latest and gretest techniques in wireless technologies focused towards 5G and beyond. This repository contains the material prepared, collated by me while I studied this course.
 
 ## Subjects
 
