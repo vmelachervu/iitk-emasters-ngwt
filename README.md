@@ -8,16 +8,15 @@ The eMasters - Next Generation Wireless Technologies is an online Masters Degree
 
 ## Subjects
 
-- [EE-900 Applied Linear Algebra for Wireless Communications](link/to/subject1)
-- [EE-901 Probability and Random Process](link/to/subject2)
+- [EE-900 Applied Linear Algebra for Wireless Communications](EE900-Algebra)
+- [EE-901 Probability and Random Process](EE901-Probability_and_Random_Processes)
 - [EE-920 Wireless Communication](E920-Wireless_Comm)
-- [EE-910 Digital Communication Systems 1](link/to/subject3)
-- [EE-922 Simulation-baed Design of 5G-NR Wireless Standard](link/to/subject3)
-- [EE-909 Estimation for Wireless Communication](link/to/subject3)
-- [EE-930 Detection for Wireless Communication and Machine Learning](link/to/subject3)
-- [EE-920 Wireless Communication](link/to/subject3)
-- [EE-902 Advanced ML Techniques for Wireless Technology](link/to/subject3)
-- [EE-904 Deep Learning for COmmunications](link/to/subject3)
+- [EE-910 Digital Communication Systems 1](EE910-Digital_Communication_Systems-1)
+- [EE-922 Simulation-baed Design of 5G-NR Wireless Standard](EE922-Simulation_Based_Design_of_5G_NR_Wireless_Standard)
+- [EE-909 Estimation for Wireless Communication](EE909-Estimation_for_Wireless_Communications)
+- [EE-930 Detection for Wireless Communication and Machine Learning](EE930-Detection_for_Wireless)
+- [EE-902 Advanced ML Techniques for Wireless Technology](EE902-Advanced_ML_Techniques_for_Wireless_Comm)
+- [EE-904 Deep Learning for Communications](EE904-Deep_Learning_for_Communications)
 
 ## Usage
 
