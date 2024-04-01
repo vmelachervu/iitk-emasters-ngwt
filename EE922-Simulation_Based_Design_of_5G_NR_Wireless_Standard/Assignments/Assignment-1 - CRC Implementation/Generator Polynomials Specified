@@ -1,0 +1,16 @@
+In 3GPP Release 15, which pertains to the 5G NR (New Radio) standard, several CRC polynomials are specified for different purposes. Here are the commonly used CRC polynomials in 3GPP Release 15:
+
+CRC-24A:
+
+Polynomial: 0x1864CFB (in hexadecimal) or 26764987 (in decimal)
+Used for Downlink Shared Channel (DL-SCH) and Uplink Shared Channel (UL-SCH) transport channels.
+CRC-24B:
+
+Polynomial: 0x1800063 (in hexadecimal) or 15787395 (in decimal)
+Used for Control Channel (CCCH), Paging Channel (PCH), Broadcast Channel (BCH), and Multicast Channel (MCH) transport channels.
+CRC-16:
+
+Polynomial: 0x1021 (in hexadecimal) or 4129 (in decimal)
+Used for System Information Block (SIB) messages and other control information.
+
+These polynomials are specified to perform error detection and validation in the respective channels and information blocks within the 5G NR standard. It's worth noting that different CRC polynomials may be used for different purposes and layers within the standard to meet specific requirements and optimize error detection capabilities.
