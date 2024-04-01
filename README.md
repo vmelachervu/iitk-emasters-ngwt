@@ -18,7 +18,6 @@ The eMasters - Next Generation Wireless Technologies is an online Masters Degree
 - [EE-920 Wireless Communication](link/to/subject3)
 - [EE-902 Advanced ML Techniques for Wireless Technology](link/to/subject3)
 - [EE-904 Deep Learning for COmmunications](link/to/subject3)
-- ...
 
 ## Usage
 
