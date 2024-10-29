@@ -1,0 +1,113 @@
+%! Author = melek
+%! Date = 9.06.2022
+
+% Preamble
+\documentclass[11pt]{article}
+
+% Packages
+\usepackage{amsmath}
+\DeclareMathOperator*{\argmax}{argmax}
+
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{bm}
+
+\graphicspath{ {../images/} }
+
+
+% Document
+\begin{document}
+
+    \maketitle
+    \setcounter{section}{8}
+
+
+    \section{Exercises}
+
+    \subsection{Question}
+
+    Show that tabular methods such as presented in Part I of this book are a special case of linear function approximation.
+    What would the feature vectors be?
+
+    \subsection*{Answer}
+
+    In linear function approximation, the value function is product of feature(x) and weight(w) vectors.
+
+    \noindention $ V(s) = x(s) W(s)$
+
+    So to apply this to part 1, one may use x vector encoded as one hot in which only corresponding state is set to 1.
+    Weight vector then should contain the state values.
+    Product of a feature vector and weight vector produces the state value.
+
+    \subsection{Question}
+
+    Why does (9.17) define (n + 1)^k distinct features for dimension k?
+
+    \subsection*{Answer}
+
+    $s_i$ in range [1,k], k elements
+    Each $s_i$ can be written in power form $C_{i,j}$ where i is in range [0,n], n+1 elements.
+
+    We have $ (n+1)^k $ different terms.
+
+    \subsection{Question}
+
+    What n and c i,j produce the feature vectors x(s) = s 1 s 22 , s 21 s 2 , s 21 s 22 ) > ?
+
+    \subsection*{Answer}
+
+    We have 2 components, $s_1, s_2$, which implies k=2, up to the power of 2, which implies n=2.
+
+    We have total of 9 elements which is $ (n+1)^k = (2+1)^2 = 9 $
+
+    \subsection{Question}
+
+    Suppose we believe that one of two state dimensions is more likely to have an effect on the value function than is the other, that generalization should be primarily across this dimension rather than along it.
+    What kind of tilings could be used to take  advantage of this prior knowledge?
+
+    \subsection*{Answer}
+
+    Suspected dimension should have denser tilings.
+
+    \subsection{Question}
+
+    You make  two tilings for each pair of dimensions, making a grand total of 21 * 2 + 56 = 98 tilings.
+    Given these feature vectors, you suspect that you still have to average out some noise,so you decide that you want learning to be gradual, taking about 10 presentations with the same feature vector before learning nears its asymptote.
+    What step-size parameter should you use?
+    Why?
+
+    \subsection*{Answer}
+
+    \noinden  $ \alpha = \frac{1}{\tau E[ x^T x]} $
+
+    \noindent  $ \tau = 10 $
+
+    \noindent  we do not know probability of a feature occurring, so we assume uniform probability.
+
+    \noindent  $ E[ x^T x] = E [ \sum_{j=1}^{98} x_j^2  ] $
+
+    \noindent  $ E[ x^T x] = \sum_{j=1}^{98} E [  x_j^2  ] $
+
+    \noindent  $ E[ x^T x] = \sum_{j=1}^{98} p(x_j) x_j^2  $
+
+    \noindent  We do now the distribution thus we will assume uniform distribution.
+
+    \noindent  $ E[ x^T x] = \sum_{j=1}^{56} p(x_j) x_j^2 + 2 * \sum_{j=1}^{21} p(x_j) x_j^2  $
+
+    Each feature has a probability of occurring 8/56 in strip tilings.
+
+    \noindent  $ E[ x^T x] = \sum_{j=1}^{56} \frac{8}{56} * 1 + 2 * \sum_{j=1}^{21} p(x_j) x_j^2  $
+
+    Each feature has a probability of occurring 6/21 in conjugate tilings.
+
+    \noindent  $ E[ x^T x] = \sum_{j=1}^{56} \frac{8}{56} x_j^2 + 2 * \sum_{j=1}^{21} \frac{6}{21} * 1   $
+
+    \noindent  $ E[ x^T x] = 8 + 2 * 6 = 20  $
+
+    Eventually:
+
+    \noinden  $ \alpha = \frac{1}{10 E[ x^T x]} = \frac{1}{10 * 20} = 0.005 $
+
+\end{document}
+
+

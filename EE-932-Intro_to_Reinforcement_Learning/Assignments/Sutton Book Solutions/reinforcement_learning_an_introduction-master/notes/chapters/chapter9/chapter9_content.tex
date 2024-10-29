@@ -1,0 +1,176 @@
+\section{On-policy Prediction with Approximation}
+
+In this section we consider the applications of function approximation techniques in reinforcement learning, to learn mappings from states to values. Typically we will consider parametric functional forms, in which case we can achieve a reduction in dimensionality of the problem (number of parameters smaller than state space). In this way, the function generalises between states, as the update of one state impacts the value of another.\\
+
+Function approximation techniques are applicable to partially observable problems, in which the full state space is not available to the agent. A function approximation scheme which ignores certain aspects of the space behaves just as if those aspects are unobservable.
+
+\subsection{Value-function Approximation}
+Many techniques from supervised learning are applicable to learning value functions from experience, but not all are equipped to deal with the non-stationarity that often occurs in RL. In RL it is also important to be able to learn online.\\
+
+\subsection{The Prediction Objective ($\VE{}$)}
+Define a state distribution $\mu(s) \geq 0$, $\sum_s \mu(s) = 1$ that represents how much we care about each state $s$. Given an estimator $\hat{v}(s, \vec{w})$ of $v_\pi(s)$, parameterised by $\vec{w}$, we define our objective function as the \emph{Mean Squared Value Error}
+\begin{equation}
+    \VE{} \doteq \sum_{s \in \S{}} \mu(s) \left[ v_\pi(s) - \hat{v}(s, \vec{w})\right]^2.
+\end{equation}\\
+
+Often we choose $\mu(s)$ to be the fraction of time spent in $s$. Under on-policy training this is referred to as the \emph{on-policy distribution}. In continuing tasks, this is the stationary distribution under $\pi$.\\
+
+At this stage it is not clear that we have chosen the correct (or even a good) objective function, since the ultimate goal is a good policy for the task. For now, will continue with $\VE{}$ nonetheless.
+
+\subsubsection*{The on-policy distribution in episodic tasks}
+In an episodic task the on-policy distribution depends on how the initial states of the episode are chosen. Let $h(s)$ be the probability that an episode begins in state $s$ and $\eta(s)$ be the expected time spent in $s$ per episode. Note that you can either start in $s$ or transition there from $\bar{s}$, so
+\[
+    \eta(s) = h(s) + \sum_{\bar{s}} \eta(\bar{s}) \sum_a \pi(a \vert{} \bar{s}) p(s \vert{} \bar{s}, a) \quad \forall s \in \S{}.
+\]
+One can solve this system for $\eta$, then take the on-policy distribution as 
+\[
+    \mu(s) = \frac{\eta(s)}{\sum_{s'}\eta(s')} \quad \forall s \in \S{}.
+\]
+This is the natural choice without discounting. With discounting we consider it a form of termination and include a factor of $\gamma$ in the second term of the recurrence relation above.
+
+\subsection{Stochastic-gradient and Semi-gradient Methods}
+\subsubsection*{(Stochastic) Gradient Descent}
+We assume that states appear in examples with the same distribution $\mu(s)$, in which case a good strategy is to minimise our loss function on observed examples. \emph{Stochastic gradient-descent} moves the weights in the direction of decreasing $\VE{}$:
+\begin{align}
+    \vec{w}_{t+1} &=  \vec{w}_t - \frac12 \alpha \grad_{\vec{w}} \left[v_\pi(S_t) - \hat{v}(S_t, \vec{w})\right]^2 \\
+                  &= \vec{w}_t + \alpha \left[ v_\pi(S_t) - \hat{v}(S_t, \vec{w})\right] \grad_{\vec{w}} \hat{v}(S_t, \vec{w}).
+\end{align}
+Of course, we might not know the true value function exactly, we will likely only have access to some approximation of it $U_t$, possibly corrupted by noise or got from bootstrapping with our latest estimate. In these cases we cannot perform the above computation, but we can still make the general SGD update
+\begin{equation}
+    \vec{w}_{t+1} = \vec{w}_t + \alpha \left[ U_t - \hat{v}(S_t, \vec{w})\right] \grad_{\vec{w}} \hat{v}(S_t, \vec{w})
+\end{equation}
+If $U_t$ is an unbiased estimate of the state value for each $t$, then the sequence $\vec{w}_t$ is guaranteed to converge to a local optimum under the usual stochastic approximation conditions for decreasing $\alpha$.\\
+
+The Monte Carlo target $U_t = G_t$ is an unbiased estimator, so locally optimal convergence is guaranteed in this case. Algorithm is given below.\\
+
+\includegraphics[width=\textwidth]{\NotesImages/gradient_monte_carlo.png}\\
+
+\subsubsection*{Semi-Gradient Descent}
+We don't get the same convergence guarantees if we use bootstrapping estimates of the value function in our update target, for instance if we had used the TD(0) update $U_t = R_{t+1} + \gamma \hat{v}(S_{t+1}, \vec{w})$. This is because the target now depends on the parameters $\vec{w}$, so the gradient is not exactly the gradient of our loss function -- it only takes into account the change on our estimate with respect to $\vec{w}$. For this reason we call updates such as this \emph{semi-gradient methods}.\\
+
+Semi-gradient methods are often preferable to pure gradient methods since they can offer much faster learning, in spite of not giving the same convergence guarantees. A prototypical choice is the TD(0) update, an algorithm for which is given in the box below.\\
+
+\includegraphics[width=\textwidth]{\NotesImages/semi_gradient_td0.png}\\
+
+\subsubsection*{State Aggregation}
+\emph{State aggregation} is a simple form of generalising in which we group together states and fix them to have the same estimated value. 
+
+\subsection{Linear Methods}
+As always, linear methods of function approximation are an important special case
+\begin{equation}
+    \hat{v}(s, \vec{w}) = \vec{w}^\top \vec{x}(s)
+\end{equation}
+where $\vec{x}(s)$ are feature vectors, vectors of functions (features) $x_i: \S{} \to \mathbb{R}$. The SGD update for the linear model is
+\begin{equation}
+    \vec{w}_{t+1} = \vec{w}_t + \alpha \left[ U_t - \hat{v}(S_t, \vec{w})\right] \vec{x}(s).
+\end{equation}
+Naturally, the linear case is the most studied and the majority of convergence results for learning systems are for this case (or simpler). In particular, there is the benefit that there is a unique global optimum for our loss function (in the non-degenerate case).
+
+\subsubsection*{Convergence of Linear TD(0)}
+The semi-gradient TD(0) algorithm is known to converge under linear function approximation. The point converged to is not the global optimum, but a point near the local optimum. We consider this case in more detail. First write $\vec{x}_t = \vec{x}(S_t)$ then rearrange the update
+\begin{align}
+    \vec{w}_{t+1} &= \vec{w}_t + \alpha \left(R_{t+1} + \gamma \vec{w}_t^\top \vec{x}_{t+1} - \vec{w}_{t}^\top \vec{x}_t\right)\vec{x}_t \\
+                  &= \vec{w}_t + \alpha \left(R_{t+1}\vec{x}_t - \vec{x}_t(\vec{x}_t -  \gamma\vec{x}_{t+1})^\top\vec{w}_t\right).
+\end{align}
+Now note that we can write
+\[
+    \E{}[\vec{w}_{t+1} \vert{} \vec{w}_t] = \vec{w}_t + \alpha (\vec{b} - \mathrm{A}\vec{w}_t)
+\]
+where $\vec{b} = \E{}[R_{t+1}\vec{x}_t]$ and $\mathrm{A} = \E{}\left[\vec{x}_t(\vec{x}_t - \gamma\vec{x}_{t+1})^\top\right]$. It's clear now that in a steady state we must have (can be shown that $\mathrm{A}$ positive definite and so invertible)
+\[
+    \vec{w}_{\text{TD}} = \mathrm{A}^{-1}\vec{b}.
+\]
+We call this point the \emph{TD fixed point}, linear semi-gradient TD(0) converges to this point. (In the notes there is a box with some details.)\\
+
+At the TD fixed point (in the continuing case) it has been proven that $\VE$ is within a bounded expansion of the lowest possible error
+\begin{equation}
+    \VE(\vec{w}_{\text{TD}}) \leq \frac{1}{1 - \gamma} \min_{\vec{w}} \VE(\vec{w}).
+\end{equation}
+It is often the case that $\gamma$ is close to 1, so this region can be quite large. The TD method has substantial loss in asymptotic performance. Regardless of this, it still has much lower variance than MC methods and can thus be faster. The desired update method will depend on the task at hand.\\
+
+\subsubsection*{Other Linear Updates}
+Linear semi-gradient DP $U_t = \sum_a \pi(a \vert{} S_t) \sum_{s', r} p(s', r \vert{} S_t, a) [r + \gamma \hat{v}(s', \vec{w}_t)]$ with updates according to the on-policy distribution also converged to the TD fixed point. There are convergence results for other step methods we have considered too. Critical to all of these is that updates are taken according to the on-policy distribution. For other update distributions, bootstrapping methods can diverge to infinity. $n$-step semi-gradient TD is given in the box below.\\
+
+\includegraphics[width=\textwidth]{\NotesImages/semi_gradient_tdn.png}\\
+
+
+\subsection{Feature Construction for Linear Methods}
+Discussed in this section
+\begin{itemize}
+    \item Polynomial Basis
+    \item Fourier Basis
+    \item One could use other orthogonal function bases but they are yet to see application in RL.
+    \item Radial Basis Functions. (Offer little advantage over coarse coding with circles, but greatly increases computational complexity)
+\end{itemize}
+
+\setcounter{subsubsection}{2}
+\subsubsection{Coarse Coding}
+One way of promoting generalisation between states is to cover the state-space in overlapping regions, with each region representing a feature. If the state is being considered, then all regions that contain this state will be activated. The amount of overlap of the receptive fields (the states which can activate a feature) dictates the breadth of generalisation.
+
+
+\subsubsection{Tile Coding}
+A \emph{tiling} of a continuous state space is form of coarse-coding that creates a partition of the state space (all of the state space is covered but elements of the tiling do not overlap). We call a sub-region of a tiling a \emph{tile}. One might introduce multiple overlapping tilings to incorporate generalisation.\\
+
+\includegraphics[width=\textwidth]{\NotesImages/tile_coding.png}\\
+
+An advantage of tilings is that, because each tiling forms a partition, the total number of features active at any one time is just the total number of tilings used. So $\alpha = \frac{1}{kn}$, where $n$ is the number of tilings, results in $k$-trial learning. That is, on average the learning asymptotes after $k$ presentations of each state (assuming all updates use the same, constant target).\\
+
+Tile coding is computationally efficient and may be the most practical feature representation for modern sequential digital computers.\\
+
+A useful trick for reducing memory requirements is \emph{hashing}. One can essentially hash the state space, then tile the hashed values. This means that each tile in the hashed space will represent (multiple) pseudo-randomly distributed tiles in the original space. Since only a small proportion of the state space needs to have high resolution value estimates, this can be a good way to reduce memory with little loss in performance.
+
+\subsection{Selecting Step-Size Parameters Manually}
+In the tabular case, taking $\alpha = \frac1\tau$ will mean that the estimate for a state will approach the mean of its targets, with the most recent targets having the greatest effect, in about $\tau$ experiences.\\
+
+With function approximation, there is not a clear notion of the number of visits to a state because of continuous degrees of generalisation. However, a sensible consideration for learning from $\tau$ presentations is 
+\begin{equation}
+    \alpha = \frac{1}{\tau \E{}[\vec{x}^\top\vec{x}]}.
+\end{equation}
+
+\subsection{Nonlinear Function Approximation: Artificial Neural Networks}
+These of course see a lot of application in RL, especially with deep learning. There are some good review articles on the web.
+
+\subsection{Least-Squares TD}
+We saw earlier that TD(0) with linear function approximation converges to the TD fixed point 
+\[
+    \vec{w}_{\text{TD}} = \mathrm{A}^{-1}\vec{b},
+\]
+where $\vec{b} = \E{}[R_{t+1}\vec{x}_t]$ and $\mathrm{A} = \E{}\left[\vec{x}_t(\vec{x}_t - \gamma\vec{x}_{t+1})^\top\right]$. Previously we computed the solution iteratively, but this is a waste of data! We could compute the MLE of $\mathrm{A}$ and $\vec{b}$ and then use those. This is the \emph{Least-Squares TD Algorithm}, it uses the estimators
+\begin{equation}
+    \hat{\mathrm{A}}_t = \sum_{k=0}^{t-1} x_k ( x_k - \gamma x_{k+1})^\top + \epsilon \mathrm{I} \quad \mathrm{and} \quad \hat{\vec{b}}_t = \sum_{k=0}^{t-1} R_{t+1} x_k 
+\end{equation}
+where we introduce $\epsilon > 0$ to ensure that the sequence of $\hat{\mathrm{A}}_t$ are each invertible. (These are estimates of $t\mathrm{A}$ and $t\vec{b}$ but the $t$ cancel out.)\\
+
+This is the most data efficient form of TD(0), but it is also more computationally intensive. Implementing incrementally and with tricks to do the matrix inverse (because of the particular form of $\mathrm{A}$ as sum of outer products), one can do this in $O(d^2)$ computations, where $d$ is the number of parameters/features (note that this is independent of $t$). (For comparison, the semi-gradient TD(0) method needs $O(d)$ computations.) The formula for $\mathrm{A}$ is 
+\begin{align}
+    \hat{\mathrm{A}}_t &= \left(\hat{\mathrm{A}}_{t-1} + x_t ( x_t - \gamma x_{t+1})^\top\right)^{-1} \\ 
+                      &= \hat{\mathrm{A}}_{t-1}^{-1} - \frac{\hat{\mathrm{A}}_{t-1}^{-1} x_t( x_t - \gamma x_{t+1})^\top \hat{\mathrm{A}}_{t-1}^{-1}}{1 + x_t ( x_t - \gamma x_{t+1})^\top \hat{\mathrm{A}}_{t-1}^{-1} x_t}
+\end{align}
+To store $\hat{A}_{t-1}$ LSTD also needs $O(d^2)$ memory. LSTD has no step-size parameter, which means that it never forgets -- this can be a blessing or a curse depending on the application. The choice between LSTD and semi-gradient TD will depend on the application, for instance the computation available and the importance of learning quickly. Pseudocode for LSTD is given below.\\
+
+\includegraphics[width=\textwidth]{\NotesImages/lstd.png}\\
+
+
+\subsection{Memory-based Function Approximation}
+As an alternative to the parametric approaches discussed above, we might instead store all the training examples and execute an algorithm on the whole dataset when required, such as LOESS or nearest neighbour averaging. This approach is sometimes called \emph{lazy learning}. The methods that go with this are non-parametric function approximation schemes. One can often evaluate the function approximation locally in the neighbourhood of the current state, which helps with the curse of dimensionality.
+
+\subsection{Kernel-based Function Approximation}
+Using kernels to define similarities between states for generalisation, e.g. kernel regression for state values.
+
+\subsection{Looking Deeper at On-policy Learning: Interest and Emphasis}
+Sometimes we are not equally interested in each state, so limited resources can be better spent than to treat every state equally. For instance, in discounted episodic problems we might be more interested in starting states because later rewards are discounted. \\
+
+Introduce the scalar random variable $I_t \geq 0 $ called $interest$, the degree of interest we have in accurately valuing the state at time $t$. If we don't care at all about the state then $I_t = 0$, if we fully care then it might be 1 (but it is formally allowed to take any non-negative value). The interest can be set in any causal way. The distribution in our loss function $\VE$ is then defined as the distribution of states encountered when following the target policy, weighted by the interest.\\
+
+We also introduce the scalar random variable $M_t \geq 0$, called the \emph{emphasis}. The emphasis multiplies the learning update at each time-step. For general $n$-step learning
+\begin{equation}
+    \vec{w}_{t+n} = \vec{w}_{t + n - 1} + \alpha M_t [G_{t:t+n} - \hat{v}(S_t, \vec{w}_{t+n-1})] \grad_{\vec{w}} \hat{v}(S_t, \vec{w}_{t+n-1}) \quad 0 \leq t < T,
+\end{equation}
+with the emphasis defined recursively as
+\begin{equation}
+    M_t = I_t + \gamma^n M_{t-n}
+\end{equation}
+with $M_t = 0$ $\forall t < 0$.
+
+
+
