@@ -12,14 +12,14 @@ The eMasters - Next Generation Wireless Technologies is an online Masters Degree
 - [EE-901 Probability and Random Process](EE901-Probability_and_Random_Processes)
 - [EE-902 Advanced ML Techniques for Wireless Technology](EE902-Advanced_ML_Techniques_for_Wireless_Comm)
 - [EE-904 Deep Learning for Communications](EE904-Deep_Learning_for_Communications)
-- [EE-908 Convex Optimisation in SPCOM](EE-908-Convex_Optimization_in_SPCOM)
+- [EE-908 Convex Optimisation in SPCOM](EE908-Convex_Optimization_in_SPCOM)
 - [EE-909 Estimation for Wireless Communication](EE909-Estimation_for_Wireless_Communications)
 - [EE-910 Digital Communication Systems 1](EE910-Digital_Communication_Systems-1)
-- [EE-915 Python-based ML Simulation for Wireless Communication](EE-915-Python-based_ML_Simulation_for_Wireless_Communication)
-- [EE-920 Wireless Communication](E920-Wireless_Comm)
+- [EE-915 Python-based ML Simulation for Wireless Communication](EE915-Python-based_ML_Simulation_for_Wireless_Communication)
+- [EE-920 Wireless Communication](EE920-Wireless_Commumiation)
 - [EE-922 Simulation-based Design of 5G-NR Wireless Standard](EE922-Simulation_Based_Design_of_5G_NR_Wireless_Standard)
 - [EE-930 Detection for Wireless Communication and Machine Learning](EE930-Detection_for_Wireless)
-- [EE-932 Introduction to Reinforcement Learning](EE-932-Intro_to_Reinforcement_Learning)
+- [EE-932 Introduction to Reinforcement Learning](EE932-Intro_to_Reinforcement_Learning)
 
 ## Usage
 
